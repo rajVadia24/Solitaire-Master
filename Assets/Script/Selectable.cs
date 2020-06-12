@@ -5,11 +5,11 @@ using UnityEngine;
 public class Selectable : MonoBehaviour
 {
     public bool faceUp = false;
-    public static Selectable instance;
+   // public static Selectable instance;
 
     private void Awake()
     {
-        instance = this;
+     //   instance = this;
     }
     void Start()
     {

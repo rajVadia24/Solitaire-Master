@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class DeckManager : MonoBehaviour
 {
     public GameObject cardPrefab;
+    public GameObject[] bottomsPos;
+    public GameObject[] topsPos;
     public Sprite[] cardFace;
     public static DeckManager instance;
 
@@ -12,6 +15,16 @@ public class DeckManager : MonoBehaviour
     public static string[] value = new string[] { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 
     public List<string> deck;
+    public List<string>[] bottoms;
+    public List<string>[] tops;
+
+    private List<string> bottom0 = new List<string>();
+    private List<string> bottom1 = new List<string>();
+    private List<string> bottom2 = new List<string>();
+    private List<string> bottom3 = new List<string>();
+    private List<string> bottom4 = new List<string>();
+    private List<string> bottom5 = new List<string>();
+    private List<string> bottom6 = new List<string>();
 
     private void Awake()
     {
@@ -20,6 +33,7 @@ public class DeckManager : MonoBehaviour
 
     void Start()
     {
+        bottoms = new List<string>[] { bottom0, bottom1, bottom2, bottom3, bottom4, bottom5, bottom6 };
         PlayingCards();
     }
 
@@ -31,12 +45,13 @@ public class DeckManager : MonoBehaviour
     public void PlayingCards()
     {
         deck = GenerateDeck();
-        foreach(string card in deck)
+        Shuffle(deck);
+        foreach (string card in deck)
         {
             print(card);
         }
-        Shuffle(deck);
-        CardDeal();
+        SolitaireSort();
+       StartCoroutine(CardDeal());
     }
    public  List<string> GenerateDeck()
     {
@@ -65,17 +80,32 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    void CardDeal()
+    IEnumerator CardDeal()
     {
-        float yoffSet = 0f;
-        float zOffset = 0.05f;
-        foreach(string card in deck)
+        for (int i = 0; i < 7; i++)
         {
-            GameObject NewCard = Instantiate(cardPrefab, new Vector3(transform.position.x, transform.position.y - yoffSet, transform.position.z - zOffset), Quaternion.identity);
-            NewCard.name = card;
-            Selectable.instance.faceUp = true;
-            yoffSet += 0.1f;
-            zOffset += 0.05f;
+            float yoffSet = 0f;
+            float zOffset = 0.05f;
+            foreach (string card in bottoms[i])
+            {
+                yield return new WaitForSeconds(0.05f);
+                GameObject NewCard = Instantiate(cardPrefab, new Vector3(bottomsPos[i].transform.position.x, bottomsPos[i].transform.position.y - yoffSet, bottomsPos[i].transform.position.z - zOffset), Quaternion.identity, bottomsPos[i].transform);
+                NewCard.name = card;
+                NewCard.GetComponent<Selectable>().faceUp = true;
+                yoffSet += 0.5f;
+                zOffset += 0.05f;
+            }
+        }
+    }
+    void SolitaireSort()
+    {
+        for(int i=0;i<7;i++)
+        {
+            for(int j=i;j<7;j++)
+            {
+                bottoms[i].Add(deck.Last<string>());
+                deck.RemoveAt(deck.Count - 1);
+            }
         }
     }
 }
