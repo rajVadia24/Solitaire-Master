@@ -91,7 +91,11 @@ public class DeckManager : MonoBehaviour
                 yield return new WaitForSeconds(0.05f);
                 GameObject NewCard = Instantiate(cardPrefab, new Vector3(bottomsPos[i].transform.position.x, bottomsPos[i].transform.position.y - yoffSet, bottomsPos[i].transform.position.z - zOffset), Quaternion.identity, bottomsPos[i].transform);
                 NewCard.name = card;
-                NewCard.GetComponent<Selectable>().faceUp = true;
+                if (card == bottoms[i][bottoms[i].Count - 1])
+                {
+                    NewCard.GetComponent<Selectable>().faceUp = true;
+                }
+               
                 yoffSet += 0.5f;
                 zOffset += 0.05f;
             }
@@ -103,7 +107,7 @@ public class DeckManager : MonoBehaviour
         {
             for(int j=i;j<7;j++)
             {
-                bottoms[i].Add(deck.Last<string>());
+                bottoms[j].Add(deck.Last<string>());
                 deck.RemoveAt(deck.Count - 1);
             }
         }
